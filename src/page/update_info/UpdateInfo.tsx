@@ -52,13 +52,13 @@ export function UpdateInfo() {
   useEffect(() => {
     async function query() {
       const res = await getUserInfo();
-
-      const { data } = res.data;
-
-      if (res.status === 201 || res.status === 200) {
-        form.setFieldValue("headPic", data.headPic);
-        form.setFieldValue("nickName", data.nickName);
-        form.setFieldValue("email", data.email);
+      if (res) {
+        if (res.status === 201 || res.status === 200) {
+          const { data } = res.data;
+          form.setFieldValue("headPic", data.headPic);
+          form.setFieldValue("nickName", data.nickName);
+          form.setFieldValue("email", data.email);
+        }
       }
     }
     query();
