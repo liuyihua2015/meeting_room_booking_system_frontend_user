@@ -8,6 +8,7 @@ import {
   updateInfo,
   updateUserInfoCaptcha,
 } from "../../interface/interfaces";
+import { HeadPicUpload } from "./HeadPicUpload";
 
 export interface UserInfo {
   headPic: string;
@@ -26,12 +27,16 @@ export function UpdateInfo() {
   const navigate = useNavigate();
 
   const onFinish = useCallback(async (values: UserInfo) => {
+    console.log("[ values ] >", values);
     const res = await updateInfo(values);
 
     if (res.status === 201 || res.status === 200) {
       const { message: msg, data } = res.data;
       if (msg === "success") {
         message.success("用户信息更新成功");
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
       } else {
         message.error(data);
       }
@@ -78,7 +83,7 @@ export function UpdateInfo() {
           name="headPic"
           rules={[{ required: true, message: "请输入头像!" }]}
         >
-          <Input />
+          <HeadPicUpload></HeadPicUpload>
         </Form.Item>
 
         <Form.Item
