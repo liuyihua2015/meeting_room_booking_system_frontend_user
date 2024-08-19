@@ -41,7 +41,11 @@ axiosInstance.interceptors.response.use(
         }, 1500);
       }
     } else {
-      return Promise.reject(error.response); // 将错误抛出
+      if (data.code === 400) {
+        message.error(data.data);
+      } else {
+        return Promise.reject(error.response); // 将错误抛出
+      }
     }
   }
 );

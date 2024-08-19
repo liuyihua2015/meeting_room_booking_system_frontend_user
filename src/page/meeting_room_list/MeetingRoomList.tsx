@@ -5,6 +5,7 @@ import { ColumnsType } from "antd/es/table";
 import { useForm } from "antd/es/form/Form";
 import { searchMeetingRoomList } from "../../interface/interfaces";
 import { CreateBookingModal } from "./CreateBookingModal";
+import dayjs from "dayjs";
 
 interface SearchMeetingRoom {
   name: string;
@@ -60,10 +61,20 @@ export function MeetingRoomList() {
       {
         title: "添加时间",
         dataIndex: "createTime",
+        render(_, record) {
+          return dayjs(new Date(record.createTime)).format(
+            "YYYY-MM-DD hh:mm:ss"
+          );
+        },
       },
       {
         title: "上次更新时间",
         dataIndex: "updateTime",
+        render(_, record) {
+          return dayjs(new Date(record.createTime)).format(
+            "YYYY-MM-DD hh:mm:ss"
+          );
+        },
       },
       {
         title: "预定状态",

@@ -41,12 +41,14 @@ export function CreateBookingModal(props: CreateBookingModalProps) {
 
     const res = await bookingAdd(values);
 
-    if (res.status === 201 || res.status === 200) {
-      message.success("预定成功");
-      form.resetFields();
-      props.handleClose();
-    } else {
-      message.error(res.data.data);
+    if (res) {
+      if (res.status === 201 || res.status === 200) {
+        message.success("预定成功");
+        form.resetFields();
+        props.handleClose();
+      } else {
+        message.error(res.data.data);
+      }
     }
   };
 
