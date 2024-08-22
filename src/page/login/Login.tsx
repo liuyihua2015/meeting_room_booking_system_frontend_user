@@ -24,20 +24,21 @@ export function Login() {
 
   const onFinish = useCallback(async (values: LoginUser) => {
     const res = await login(values.username, values.password);
+    if (res) {
+      const { data } = res.data;
+      if (res.status === 201 || res.status === 200) {
+        message.success("登录成功");
+        console.log("[ data ] >", data);
+        localStorage.setItem("access_token", data.accessToken);
+        localStorage.setItem("refresh_token", data.refreshToken);
+        localStorage.setItem("user_info", JSON.stringify(data.userInfo));
 
-    const { code, message: msg, data } = res.data;
-    if (res.status === 201 || res.status === 200) {
-      message.success("登录成功");
-      console.log("[ data ] >", data);
-      localStorage.setItem("access_token", data.accessToken);
-      localStorage.setItem("refresh_token", data.refreshToken);
-      localStorage.setItem("user_info", JSON.stringify(data.userInfo));
-
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
-    } else {
-      message.error(data || "系统繁忙，请稍后再试");
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } else {
+        message.error(data || "系统繁忙，请稍后再试");
+      }
     }
   }, []);
 
@@ -67,7 +68,18 @@ export function Login() {
             <Link to="/update_password">忘记密码</Link>
           </div>
         </Form.Item>
-
+        <Form.Item {...layout2}>
+          <div>
+            <a
+              href="#"
+              onClick={() => {
+                window.location.href = "http://localhost:3005/user/google";
+              }}
+            >
+              Google 账号登录
+            </a>
+          </div>
+        </Form.Item>
         <Form.Item {...layout2}>
           <Button className="btn" type="primary" htmlType="submit">
             登录

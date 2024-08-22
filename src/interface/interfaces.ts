@@ -9,7 +9,7 @@ import dayjs from "dayjs";
 import { CreateBooking } from "../page/meeting_room_list/CreateBookingModal";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3001/",
+  baseURL: "http://localhost:3005/",
   timeout: 3000,
 });
 
@@ -27,22 +27,28 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    // console.log('[ error ] >', error);
     let { data, config } = error.response;
-
+ console.log('[ data ] >', data);
     if (data.code === 401 && !config.url.includes("/user/refresh")) {
       const res = await refreshToken();
-      let { status } = res;
-      if (status === 200 || status === 201) {
-        return axiosInstance(config);
-      } else {
-        message.error(res.data.data);
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 1500);
+      if (res) {
+        let { status } = res;
+        if (status === 200 || status === 201) {
+          return axiosInstance(config);
+        } else {
+          message.error(res.data.data);
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1000);
+        }
       }
     } else {
-      if (data.code === 400) {
+      if (data.code === 400 || data.code === 401) {
         message.error(data.data);
+         setTimeout(() => {
+          window.location.href = "/login";
+        }, 1000)
       } else {
         return Promise.reject(error.response); // 将错误抛出
       }
@@ -53,13 +59,21 @@ axiosInstance.interceptors.response.use(
 async function refreshToken() {
   const res = await axiosInstance.get("/user/refresh", {
     params: {
-      refreshToken: localStorage.getItem("refresh_token"),
+      refresh_token: localStorage.getItem("refresh_token"),
     },
   });
-  localStorage.setItem("access_token", res.data.data.access_token);
-  localStorage.setItem("refresh_token", res.data.data.refresh_token);
+  if (res) {
+    localStorage.setItem("access_token", res.data.data.access_token);
+    localStorage.setItem("refresh_token", res.data.data.refresh_token);
+    return res;
+  } else { 
+    localStorage.setItem("access_token", "");
+    localStorage.setItem("refresh_token", "");
+    return null;
+  }
+ 
 
-  return res;
+  
 }
 
 export async function login(username: string, password: string) {
